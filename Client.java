@@ -11,10 +11,11 @@ public class Client {
     String userName = System.getProperty("user.name");
     String response;
     boolean jobAvail = false;
+    int schedJob;
     String largestServerType = " ";
     int largestServerCores = 0;
     int largestServerID;
-    int largestServerCount = 0;
+    int largestServerAvail = 0;
     ArrayList<String> largestServers = new ArrayList<String>();
 
     // send handshake message to the server
@@ -66,12 +67,38 @@ public class Client {
             }
           }
         }
+
+        if (jobAvail == false) {
+          for (int x = 0; x < largestServers.size(); x++) {
+            String[] serList = largestServers.get(x).split(" ");
+            if (largestServerType.equals(serList[0])
+                && largestServerCores == Integer.parseInt(serList[4])) {
+              largestServerAvail++;
+              jobAvail = true;
+            }
+          }
+        }
+        dout.write(("OK\n").getBytes());
+        dout.flush();
+        response = bin.readLine();
+
+        schedJob = jobID % largestServerAvail;
+        largestServerID = schedJob;
+        dout.write(("SCHD " + jobID + " " + largestServerType + " " + largestServerID + "\n").getBytes());
+        dout.flush();
+        response = bin.readLine();
+
+        dout.write(("REDY\n").getBytes());
+        dout.flush();
+        response = bin.readLine();
+
       } else if (response.startsWith("JCPL")) {
         dout.write(("REDY\n").getBytes());
         dout.flush();
         response = bin.readLine();
       }
     }
+
     dout.write(("QUIT\n").getBytes());
     dout.flush();
     response = bin.readLine();
