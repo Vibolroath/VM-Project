@@ -29,7 +29,7 @@ public class Client {
     dout.flush();
     response = bin.readLine();
 
-    // send REDY to ds-server and read the response 
+    // send REDY to ds-server and read the response
     dout.write(("REDY\n").getBytes());
     dout.flush();
     response = bin.readLine();
@@ -46,20 +46,21 @@ public class Client {
         dout.flush();
         response = bin.readLine();
 
+        // send OK to ds-server
+        dout.write(("OK\n").getBytes());
+        dout.flush();
+
         // array of strings containing DATA and its details from ds-server
         String[] dataLoop = response.split(" ");
         int nServer = Integer.parseInt(dataLoop[1]);
 
-        // send OK to server
-        dout.write(("OK\n").getBytes());
-        dout.flush();
-
-        // if there are jobs available, read the response. If not, add the response to arraylist
-        if (jobAvail == true) {
+        // if there are jobs available, read the response
+        // if not, read and add the response to arraylist
+        if (jobAvail) {
           for (int x = 0; x < nServer; x++) {
             response = bin.readLine();
           }
-        } else if (jobAvail == false) {
+        } else if (!jobAvail) {
           for (int y = 0; y < nServer; y++) {
             response = bin.readLine();
             largestServers.add(response);
@@ -80,23 +81,26 @@ public class Client {
           }
         }
 
-        // counting available largest server
-        if (jobAvail == false) {
-          for (int x = 0; x < largestServers.size(); x++) {
-            String[] serList = largestServers.get(x).split(" ");
-            if (largestServerType.equals(serList[0])
-                && largestServerCores == Integer.parseInt(serList[4])) {
+        // check if there is an available largest server and count it
+        if (!jobAvail) {
+          for (String serverAvail : largestServers) {
+            String[] serverDetails = serverAvail.split(" ");
+            String serverType = serverDetails[0];
+            int serverCores = Integer.parseInt(serverDetails[4]);
+            if (serverType.equals(largestServerType) && serverCores == largestServerCores) {
               largestServerAvail++;
               jobAvail = true;
+              break;
             }
           }
         }
+
         // send OK to ds-server and read the response
         dout.write(("OK\n").getBytes());
         dout.flush();
         response = bin.readLine();
 
-        //use modulo to find largestserverid and start scheduling the jobs
+        // use modulo to find largestserverid and start scheduling the jobs
         schedJob = jobID % largestServerAvail;
         largestServerID = schedJob;
         // send SCHD to ds-server to schedule jobs and read the response
@@ -104,24 +108,24 @@ public class Client {
         dout.flush();
         response = bin.readLine();
 
-        // send REDY to ds-server and read the response 
+        // send REDY to ds-server and read the response
         dout.write(("REDY\n").getBytes());
         dout.flush();
         response = bin.readLine();
 
       } else if (response.startsWith("JCPL")) {
-        // send REDY to ds-server and read the response 
+        // send REDY to ds-server and read the response
         dout.write(("REDY\n").getBytes());
         dout.flush();
         response = bin.readLine();
       }
     }
-    // send QUIT to ds-server and read the response 
+    // send QUIT to ds-server and read the response
     dout.write(("QUIT\n").getBytes());
     dout.flush();
     response = bin.readLine();
 
-    //closing the output-stream, input-stream, and socket
+    // closing the output-stream, input-stream, and socket
     dout.close();
     bin.close();
     s.close();
