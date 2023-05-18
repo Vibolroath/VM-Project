@@ -1,7 +1,5 @@
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Client {
   public static void main(String[] args) throws IOException {
@@ -52,21 +50,12 @@ public class Client {
         dout.flush();
         response = bin.readLine();
 
-        // create a list of servers
-        ArrayList<Server> servers = new ArrayList<>();
-        for (int x = 0; x < nServer; x++) {
-          // array of strings containing Server and its details from ds-server
-          String[] serverDetails = response.split(" ");
-          String serverType = serverDetails[0];
-          int serverID = Integer.parseInt(serverDetails[1]);
-          int serverCores = Integer.parseInt(serverDetails[4]);
-          int serverMemory = Integer.parseInt(serverDetails[5]);
-          int serverDisk = Integer.parseInt(serverDetails[6]);
+        // array of strings containing Server and its details from ds-server
+        String[] serverDetails = response.split(" ");
+        String serverType = serverDetails[0];
+        int serverID = Integer.parseInt(serverDetails[1]);
 
-          // create a new Server object and add it to the list of servers
-          Server server = new Server(serverType, serverID, serverCores, serverMemory, serverDisk);
-          servers.add(server);
-
+        for (int x = 0; x < nServer - 1; x++) {
           response = bin.readLine();
         }
 
@@ -75,36 +64,10 @@ public class Client {
         dout.flush();
         response = bin.readLine();
 
-        // create a new Job object
-        Job job = new Job(jobID, jobCore, jobMemory, jobDisk);
-
-        // use the firstFit algorithm to find a server for the job to be scheduled on
-        Server selectedServer = firstFit(job, servers);
-
-        if (selectedServer != null) {
-          // send SCHD to ds-server to schedule jobs and read the response
-          dout.write(("SCHD " + jobID + " " + selectedServer.getType() + " " + selectedServer.getID() +
-              "\n").getBytes());
-          dout.flush();
-          response = bin.readLine();
-        }
-
-        // // send SCHD to ds-server to schedule jobs and read the response
-        // dout.write(("SCHD " + jobID + " " + serverType + " " + serverID +
-        // "\n").getBytes());
-        // dout.flush();
-        // response = bin.readLine();
-
-        // for (int x = 0; x < nServer - 1; x++) {
-        // if (jobCore >= serverCores && jobMemory >= serverMemory && jobDisk >=
-        // serverDisk) {
-        // // send SCHD to ds-server to schedule jobs and read the response
-        // dout.write(("SCHD " + jobID + " " + serverType + " " + serverID +
-        // "\n").getBytes());
-        // dout.flush();
-        // response = bin.readLine();
-        // }
-        // }
+        // send SCHD to ds-server to schedule jobs and read the response
+        dout.write(("SCHD " + jobID + " " + serverType + " " + serverID + "\n").getBytes());
+        dout.flush();
+        response = bin.readLine();
 
         // send REDY to ds-server and read the response
         dout.write(("REDY\n").getBytes());
@@ -128,25 +91,4 @@ public class Client {
     bin.close();
     s.close();
   }
-
-  public static Server firstFit(Job j, List<Server> servers) {
-    // search for a server s*, from the first one to last one in servers,
-    // that first satisfies conditions of
-    // 1. Having sufficient resources readily available for j and
-    // 2. Not having running jobs and waiting jobs at the same time.
-    for (Server s : servers) {
-        if (s.hasSufficientResourcesFor(j) && !s.hasRunningJobs() && !s.hasWaitingJobs()) {
-            return s;
-        }
-    }
-    // If no s* found, select the first Active/Booting server with sufficient
-    // resource capacity ('Capable') regardless of availability,
-    // i.e., it is busy processing (running or waiting to run) one or more jobs.
-    for (Server s : servers) {
-        if (s.isActive() || s.isBooting() && s.hasSufficientResourcesFor(j)) {
-            return s;
-        }
-    }
-    return null;
-}
 }
