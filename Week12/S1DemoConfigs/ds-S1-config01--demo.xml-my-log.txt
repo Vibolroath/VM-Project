@@ -1,0 +1,11 @@
+# ds-sim server 28-Feb, 2023 @ MQ - client-server
+# Server-side simulator started with './ds-server -c ./S1DemoConfigs/ds-S1-config01--demo.xml -v brief -n'
+# Waiting for connection to port 50000 of IP address 127.0.0.1
+RCVD HELO
+SENT OK
+RCVD AUTH roathleav
+# Welcome  roathleav!
+# The system information can be read from 'ds-system.xml'
+SENT OK
+RCVD REDY
+SENT JOBN 28 0 28087 2 1800 3300
