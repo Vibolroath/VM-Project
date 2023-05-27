@@ -88,16 +88,14 @@ public class Client {
           // break;
           // }
 
-          if (isFit == true) {
+          if (serverCores >= jobCore && serverMemory >= jobMemory && serverDisk >= jobDisk
+              && isFit == false) {
             fitServerType = serverType;
             fitServerID = serverID;
+            isFit = true;
           }
-        }
 
-        // if (isFit == false) {
-        // fitServerType = serverType;
-        // fitServerID = serverID;
-        // }
+        }
 
         // send OK to ds-server and read the response
         dout.write(("OK\n").getBytes());
