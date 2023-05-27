@@ -28,7 +28,7 @@ public class Client {
 
     while (!response.equals("NONE")) {
       boolean isFit = true;
-      boolean isFirst = true;
+      boolean firstFit = true;
       // send REDY to ds-server and read the response
       dout.write(("REDY\n").getBytes());
       dout.flush();
@@ -59,31 +59,29 @@ public class Client {
 
         for (int x = 0; x < nServer - 1; x++) {
           response = bin.readLine();
-        }
 
-        // array of strings containing Server and its details from ds-server
-        String[] serverDetails = response.split(" ");
-        String serverType = serverDetails[0];
-        int serverID = Integer.parseInt(serverDetails[1]);
-        int serverCores = Integer.parseInt(serverDetails[4]);
-        int serverMemory = Integer.parseInt(serverDetails[5]);
-        int serverDisk = Integer.parseInt(serverDetails[6]);
-        int serverWait = Integer.parseInt(serverDetails[7]);
+          // array of strings containing Server and its details from ds-server
+          String[] serverDetails = response.split(" ");
+          String serverType = serverDetails[0];
+          int serverID = Integer.parseInt(serverDetails[1]);
+          int serverCores = Integer.parseInt(serverDetails[4]);
+          int serverMemory = Integer.parseInt(serverDetails[5]);
+          int serverDisk = Integer.parseInt(serverDetails[6]);
+          int serverWait = Integer.parseInt(serverDetails[7]);
 
-        if(isFit) {
-          fitServerType = serverType;
-          fitServerID = serverID;
-          isFit = false;
-        }
+          if(firstFit) {
+            fitServerType = serverType;
+            fitServerID = serverID;
+            firstFit = false;
+          }
 
-        // finding capable server based on resources
-        if (serverCores >= fitServerCores && serverMemory >= fitServerMemory && serverDisk >= fitServerDisk
-            && serverWait == 0) {
-          fitServerType = serverType;
-          fitServerID = serverID;
-        } else if (serverWait != 0) {
-          fitServerType = serverType;
-          fitServerID = serverID;
+          //finding capable server based on resources
+          if (serverCores >= fitServerCores && serverMemory >= fitServerMemory && serverDisk >= fitServerDisk
+              && serverWait == 0 && isFit) {
+            fitServerType = serverType;
+            fitServerID = serverID;
+            isFit = false;
+          } 
         }
 
         // send OK to ds-server and read the response
@@ -119,5 +117,3 @@ public class Client {
     s.close();
   }
 }
-
-
