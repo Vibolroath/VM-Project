@@ -27,7 +27,7 @@ public class Client {
     response = bin.readLine();
 
     while (!response.equals("NONE")) {
-      boolean isFit = true;
+      boolean isFit = false;
       boolean firstFit = true;
       // send REDY to ds-server and read the response
       dout.write(("REDY\n").getBytes());
@@ -69,20 +69,36 @@ public class Client {
           int serverDisk = Integer.parseInt(serverDetails[6]);
           int serverWait = Integer.parseInt(serverDetails[7]);
 
-          if(firstFit) {
+          if (firstFit) {
             fitServerType = serverType;
             fitServerID = serverID;
             firstFit = false;
           }
 
-          //finding capable server based on resources
-          if (serverCores >= fitServerCores && serverMemory >= fitServerMemory && serverDisk >= fitServerDisk
-              && serverWait == 0 && isFit) {
+          // finding capable server based on resources
+          if (serverCores >= jobCore && serverMemory >= jobMemory && serverDisk >= jobDisk
+              && serverWait <= 0 && isFit == false) {
             fitServerType = serverType;
             fitServerID = serverID;
-            isFit = false;
-          } 
+            isFit = true;
+          }
+          // else if(serverWait != 0) {
+          // fitServerType = serverType;
+          // fitServerID = serverID;
+          // break;
+          // }
+
+          // if (isFit == false) {
+          //   fitServerType = serverType;
+          //   fitServerID = serverID;
+          //   isFit = true;
+          // }
         }
+
+        // if (isFit == false) {
+        // fitServerType = serverType;
+        // fitServerID = serverID;
+        // }
 
         // send OK to ds-server and read the response
         dout.write(("OK\n").getBytes());
