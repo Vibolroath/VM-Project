@@ -10,9 +10,6 @@ public class Client {
     String userName = System.getProperty("user.name");
     String response;
     String fitServerType = " ";
-    int fitServerCores = 0;
-    int fitServerMemory = 0;
-    int fitServerDisk = 0;
     int fitServerID = 0;
 
     // send handshake message to the ds-server
@@ -29,6 +26,7 @@ public class Client {
     while (!response.equals("NONE")) {
       boolean isFit = false;
       boolean firstFit = true;
+
       // send REDY to ds-server and read the response
       dout.write(("REDY\n").getBytes());
       dout.flush();
@@ -67,7 +65,6 @@ public class Client {
           int serverCores = Integer.parseInt(serverDetails[4]);
           int serverMemory = Integer.parseInt(serverDetails[5]);
           int serverDisk = Integer.parseInt(serverDetails[6]);
-          int serverWait = Integer.parseInt(serverDetails[7]);
 
           if (firstFit) {
             fitServerType = serverType;
@@ -75,26 +72,11 @@ public class Client {
             firstFit = false;
           }
 
-          // finding capable server based on resources
-          if (serverCores >= jobCore && serverMemory >= jobMemory && serverDisk >= jobDisk
-              && serverWait <= 0 && isFit == false) {
+          if (serverCores >= jobCore && serverMemory >= jobMemory && serverDisk >= jobDisk && isFit == false) {
             fitServerType = serverType;
             fitServerID = serverID;
             isFit = true;
           }
-          // else if(serverWait != 0) {
-          // fitServerType = serverType;
-          // fitServerID = serverID;
-          // break;
-          // }
-
-          if (serverCores >= jobCore && serverMemory >= jobMemory && serverDisk >= jobDisk
-              && isFit == false) {
-            fitServerType = serverType;
-            fitServerID = serverID;
-            isFit = true;
-          }
-
         }
 
         // send OK to ds-server and read the response
