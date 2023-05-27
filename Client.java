@@ -88,11 +88,10 @@ public class Client {
           // break;
           // }
 
-          // if (isFit == false) {
-          //   fitServerType = serverType;
-          //   fitServerID = serverID;
-          //   isFit = true;
-          // }
+          if (isFit == true) {
+            fitServerType = serverType;
+            fitServerID = serverID;
+          }
         }
 
         // if (isFit == false) {
