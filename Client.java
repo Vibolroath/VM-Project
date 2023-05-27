@@ -72,7 +72,8 @@ public class Client {
             firstFit = false;
           }
 
-          if (serverCores >= jobCore && serverMemory >= jobMemory && serverDisk >= jobDisk && isFit == false) {
+          if (serverCores >= jobCore && serverMemory >= jobMemory && serverDisk >= jobDisk
+              && isFit == false) {
             fitServerType = serverType;
             fitServerID = serverID;
             isFit = true;
