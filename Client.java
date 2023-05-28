@@ -9,8 +9,6 @@ public class Client {
     DataOutputStream dout = new DataOutputStream(s.getOutputStream());
     String userName = System.getProperty("user.name");
     String response;
-    String firstfitServerType = "";
-    int firstfitServerID = 0;
     String fitServerType = "";
     int fitServerID = 0;
 
@@ -69,20 +67,6 @@ public class Client {
           int serverDisk = Integer.parseInt(serverDetails[6]);
           int serverWait = 0;
           int maxSeverWait = 0;
-
-          // if (firstFit) {
-          // firstfitServerType = serverType;
-          // firstfitServerID = serverID;
-          // firstFit = false;
-          // }
-
-          // if (serverCores >= jobCore && serverMemory >= jobMemory && serverDisk >=
-          // jobDisk
-          // && isFit == false && serverWait == 0) {
-          // fitServerType = serverType;
-          // fitServerID = serverID;
-          // isFit = true;
-          // }
 
           if (firstFit) {
             fitServerType = serverType;
