@@ -28,6 +28,8 @@ public class Client {
     while (!response.equals("NONE")) {
       boolean isFit = false;
       boolean firstFit = true;
+      int serverWait = 0;
+      int maxSeverWait = 0;
 
       // send REDY to ds-server and read the response
       writeMsg("REDY");
@@ -64,8 +66,6 @@ public class Client {
           int serverCores = Integer.parseInt(serverDetails[4]);
           int serverMemory = Integer.parseInt(serverDetails[5]);
           int serverDisk = Integer.parseInt(serverDetails[6]);
-          int serverWait = 0;
-          int maxSeverWait = 0;
 
           // find the first server encountered
           if (firstFit) {
