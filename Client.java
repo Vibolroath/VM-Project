@@ -67,12 +67,14 @@ public class Client {
           int serverWait = 0;
           int maxSeverWait = 0;
 
+          // find the first server encountered
           if (firstFit) {
             fitServerType = serverType;
             fitServerID = serverID;
             firstFit = false;
           }
 
+          // check if the server is capable and available
           if (serverCores >= jobCore && serverMemory >= jobMemory && serverDisk >= jobDisk
               && isFit == false && serverWait <= maxSeverWait) {
             fitServerType = serverType;
@@ -105,7 +107,7 @@ public class Client {
         response = bin.readLine();
       }
     }
-    
+
     // send QUIT to ds-server and read the response
     writeMsg("QUIT");
     response = bin.readLine();
@@ -114,11 +116,13 @@ public class Client {
     writeClose();
   }
 
+  // function for writing messages
   public static void writeMsg(String message) throws Exception {
     dout.write((message + "\n").getBytes());
     dout.flush();
   }
 
+  // function for closing
   public static void writeClose() throws Exception {
     dout.close();
     bin.close();
