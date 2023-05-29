@@ -2,11 +2,15 @@ import java.io.*;
 import java.net.Socket;
 
 public class Client {
-  public static void main(String[] args) throws IOException {
+  static Socket s;
+  static BufferedReader bin;
+  static DataOutputStream dout;
+
+  public static void main(String[] args) throws Exception {
     // connect to the server
-    Socket s = new Socket("localhost", 50000);
-    BufferedReader bin = new BufferedReader(new InputStreamReader(s.getInputStream()));
-    DataOutputStream dout = new DataOutputStream(s.getOutputStream());
+    s = new Socket("localhost", 50000);
+    bin = new BufferedReader(new InputStreamReader(s.getInputStream()));
+    dout = new DataOutputStream(s.getOutputStream());
     String userName = System.getProperty("user.name");
     String response;
     String fitServerType = "";
@@ -14,13 +18,11 @@ public class Client {
 
     // send handshake message to the ds-server
     // send HELO to ds-server and read the response
-    dout.write(("HELO\n").getBytes());
-    dout.flush();
+    writeMsg("HELO");
     response = bin.readLine();
 
     // send AUTH with username to ds-server and read the response
-    dout.write(("AUTH " + userName + "\n").getBytes());
-    dout.flush();
+    writeMsg("AUTH " + userName);
     response = bin.readLine();
 
     while (!response.equals("NONE")) {
@@ -28,8 +30,7 @@ public class Client {
       boolean firstFit = true;
 
       // send REDY to ds-server and read the response
-      dout.write(("REDY\n").getBytes());
-      dout.flush();
+      writeMsg("REDY");
       response = bin.readLine();
 
       if (response.startsWith("JOBN")) {
@@ -42,17 +43,15 @@ public class Client {
         int jobDisk = Integer.parseInt(jobDetails[6]);
 
         // send GETS ALL to ds-server to get DATA and read the response
-        dout.write(("GETS Capable " + jobCore + " " + jobMemory + " " + jobDisk + "\n").getBytes());
-        dout.flush();
+        writeMsg("GETS Capable " + jobCore + " " + jobMemory + " " + jobDisk);
         response = bin.readLine();
 
         // array of strings containing DATA and its details from ds-server
         String[] dataLoop = response.split(" ");
         int nServer = Integer.parseInt(dataLoop[1]);
 
-        // send OK to ds-server
-        dout.write(("OK\n").getBytes());
-        dout.flush();
+        // send OK to ds-server and read the response
+        writeMsg("OK");
         response = bin.readLine();
 
         for (int x = 0; x < nServer - 1; x++) {
@@ -89,33 +88,38 @@ public class Client {
         }
 
         // send OK to ds-server and read the response
-        dout.write(("OK\n").getBytes());
-        dout.flush();
+        writeMsg("OK");
         response = bin.readLine();
 
         // send SCHD to ds-server to schedule jobs and read the response
-        dout.write(("SCHD " + jobID + " " + fitServerType + " " + fitServerID + "\n").getBytes());
-        dout.flush();
+        writeMsg("SCHD " + jobID + " " + fitServerType + " " + fitServerID);
         response = bin.readLine();
 
         // send REDY to ds-server and read the response
-        dout.write(("REDY\n").getBytes());
-        dout.flush();
+        writeMsg("REDY");
         response = bin.readLine();
 
       } else if (response.startsWith("JCPL")) {
         // send REDY to ds-server and read the response
-        dout.write(("REDY\n").getBytes());
-        dout.flush();
+        writeMsg("REDY");
         response = bin.readLine();
       }
     }
+    
     // send QUIT to ds-server and read the response
-    dout.write(("QUIT\n").getBytes());
-    dout.flush();
+    writeMsg("QUIT");
     response = bin.readLine();
 
     // closing the output-stream, input-stream, and socket
+    writeClose();
+  }
+
+  public static void writeMsg(String message) throws Exception {
+    dout.write((message + "\n").getBytes());
+    dout.flush();
+  }
+
+  public static void writeClose() throws Exception {
     dout.close();
     bin.close();
     s.close();
