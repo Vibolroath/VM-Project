@@ -5,12 +5,12 @@ SID: 46120386
 
 Overview: 
 
-COMP3100 Stage 1: Design and implementation of a client-side simulator with a simple job dispatcher called Largest-Round-Robin (LRR).
+COMP3100 Stage 2: Design and implementation of an scheduling algorithm that can outperform the five baseline algorithms focusing on the turnaround time.
 
 
 How to run:
 
-Server: ./ds-server -c [any-config-files] -n -v brief/all
+Server: ./ds-server -c [any-config-files] -n -v brief
 
 Client: java Client
 
